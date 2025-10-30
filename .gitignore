@@ -88,3 +88,6 @@ Thumbs.db
 # Local configuration
 .env.local
 config.local.*
+
+# Internal documentation (not for public repo)
+OPEN_SOURCE_PREP.md
