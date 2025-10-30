@@ -1,0 +1,487 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Claude Code Usage - SQLite",
+    "tags": ["claude", "usage", "sqlite"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "5m",
+    "time": {
+      "from": "now-30d",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Daily Usage Trends",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "showPoints": "never"
+            },
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Total Tokens (M)"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "#667eea"
+                  }
+                },
+                {
+                  "id": "custom.axisPlacement",
+                  "value": "left"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Daily Cost"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "#f093fb"
+                  }
+                },
+                {
+                  "id": "custom.axisPlacement",
+                  "value": "right"
+                },
+                {
+                  "id": "unit",
+                  "value": "currencyUSD"
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource"
+            },
+            "queryText": "SELECT \n  date as time,\n  total_tokens / 1000000.0 as \"Total Tokens (M)\",\n  total_cost as \"Daily Cost\"\nFROM daily_usage \nORDER BY date",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Model Cost Distribution",
+        "type": "piechart",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "currencyUSD"
+          }
+        },
+        "options": {
+          "pieType": "pie",
+          "tooltip": {
+            "mode": "single"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "right"
+          },
+          "displayLabels": ["name", "percent"]
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource"
+            },
+            "queryText": "SELECT \n  REPLACE(REPLACE(model_name, 'claude-', ''), '-20250514', '') as metric,\n  SUM(cost) as value\nFROM model_usage \nGROUP BY model_name\nORDER BY value DESC",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Cache Efficiency Over Time",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20
+            },
+            "color": {
+              "mode": "fixed",
+              "fixedColor": "#10b981"
+            },
+            "unit": "percent",
+            "max": 100,
+            "min": 0
+          }
+        },
+        "options": {
+          "tooltip": {
+            "mode": "single"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource"
+            },
+            "queryText": "SELECT \n  date as time,\n  CASE \n    WHEN (cache_read_tokens + cache_creation_tokens) > 0 \n    THEN (cache_read_tokens * 100.0) / (cache_read_tokens + cache_creation_tokens)\n    ELSE 0 \n  END as \"Cache Hit Rate\"\nFROM daily_usage \nORDER BY date",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Input vs Output Tokens",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20
+            },
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Input Tokens"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "#ef4444"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Output Tokens"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "#f59e0b"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource"
+            },
+            "queryText": "SELECT \n  date as time,\n  input_tokens as \"Input Tokens\",\n  output_tokens as \"Output Tokens\"\nFROM daily_usage \nORDER BY date",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Cost Efficiency Over Time",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10
+            },
+            "color": {
+              "mode": "fixed",
+              "fixedColor": "#06b6d4"
+            },
+            "unit": "currencyUSD"
+          }
+        },
+        "options": {
+          "tooltip": {
+            "mode": "single"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource"
+            },
+            "queryText": "SELECT \n  date as time,\n  CASE \n    WHEN total_tokens > 0 \n    THEN (total_cost / total_tokens) * 1000000 \n    ELSE 0 \n  END as \"Cost per M Tokens\"\nFROM daily_usage \nWHERE total_tokens > 0\nORDER BY date",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Summary Statistics",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Total Cost"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "currencyUSD"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "#10b981"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Total Tokens"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "short"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "#667eea"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Active Days"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "short"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "#6366f1"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Avg Cost per Day"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "currencyUSD"
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "fixed",
+                    "fixedColor": "#f59e0b"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "orientation": "horizontal",
+          "textMode": "auto",
+          "colorMode": "background",
+          "graphMode": "none",
+          "justifyMode": "center"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource"
+            },
+            "queryText": "SELECT \n  'Total Cost' as metric, SUM(total_cost) as value\nFROM daily_usage\nUNION ALL\nSELECT \n  'Total Tokens' as metric, SUM(total_tokens) as value\nFROM daily_usage\nUNION ALL\nSELECT \n  'Active Days' as metric, COUNT(*) as value\nFROM daily_usage\nUNION ALL\nSELECT \n  'Avg Cost per Day' as metric, AVG(total_cost) as value\nFROM daily_usage",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Model Usage Timeline",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 28
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "stacking": {
+                "mode": "none"
+              }
+            },
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "currencyUSD"
+          }
+        },
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource"
+            },
+            "queryText": "SELECT \n  date as time,\n  REPLACE(REPLACE(model_name, 'claude-', ''), '-20250514', '') as metric,\n  cost as value\nFROM model_usage \nORDER BY date, model_name",
+            "refId": "A"
+          }
+        ]
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [],
+    "liveNow": false,
+    "schemaVersion": 38,
+    "tags": ["claude", "usage", "sqlite"],
+    "time": {
+      "from": "now-30d",
+      "to": "now"
+    },
+    "timezone": "",
+    "title": "Claude Code Usage - SQLite",
+    "uid": "claude-sqlite-usage",
+    "version": 1
+  }
+}

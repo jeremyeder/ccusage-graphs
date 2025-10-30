@@ -1,0 +1,106 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Claude Usage Test",
+    "tags": ["claude", "test"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "5m",
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Daily Cost Test",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource",
+              "uid": "${DS_CLAUDE_USAGE_SQLITE}"
+            },
+            "rawSql": "SELECT date as time, total_cost as value FROM daily_usage ORDER BY date",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineWidth": 2,
+              "fillOpacity": 10
+            },
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "currencyUSD"
+          }
+        },
+        "options": {
+          "legend": {
+            "displayMode": "hidden"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Total Records",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "frser-sqlite-datasource",
+              "uid": "${DS_CLAUDE_USAGE_SQLITE}"
+            },
+            "rawSql": "SELECT COUNT(*) as value FROM daily_usage",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "textMode": "auto",
+          "colorMode": "background"
+        }
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [],
+    "liveNow": false,
+    "schemaVersion": 38,
+    "tags": ["claude", "test"],
+    "timezone": "",
+    "title": "Claude Usage Test",
+    "uid": "claude-test-dash",
+    "version": 1,
+    "weekStart": ""
+  }
+}

@@ -1,0 +1,75 @@
+modules:
+  claude_usage:
+    http_config:
+      method: GET
+    metrics:
+    - name: claude_daily_total_tokens
+      path: "$.daily[*].totalTokens"
+      labels:
+        date: "$.daily[*].date"
+      help: "Total tokens used per day"
+      
+    - name: claude_daily_total_cost
+      path: "$.daily[*].totalCost"
+      labels:
+        date: "$.daily[*].date"
+      help: "Total cost per day in USD"
+      
+    - name: claude_daily_input_tokens
+      path: "$.daily[*].inputTokens"
+      labels:
+        date: "$.daily[*].date"
+      help: "Input tokens per day"
+      
+    - name: claude_daily_output_tokens
+      path: "$.daily[*].outputTokens"
+      labels:
+        date: "$.daily[*].date"
+      help: "Output tokens per day"
+      
+    - name: claude_daily_cache_creation_tokens
+      path: "$.daily[*].cacheCreationTokens"
+      labels:
+        date: "$.daily[*].date"
+      help: "Cache creation tokens per day"
+      
+    - name: claude_daily_cache_read_tokens
+      path: "$.daily[*].cacheReadTokens"
+      labels:
+        date: "$.daily[*].date"
+      help: "Cache read tokens per day"
+      
+    - name: claude_model_input_tokens
+      path: "$.daily[*].modelBreakdowns[*].inputTokens"
+      labels:
+        date: "$.daily[*].date"
+        model_name: "$.daily[*].modelBreakdowns[*].modelName"
+      help: "Input tokens per model per day"
+      
+    - name: claude_model_output_tokens
+      path: "$.daily[*].modelBreakdowns[*].outputTokens"
+      labels:
+        date: "$.daily[*].date"
+        model_name: "$.daily[*].modelBreakdowns[*].modelName"
+      help: "Output tokens per model per day"
+      
+    - name: claude_model_cost
+      path: "$.daily[*].modelBreakdowns[*].cost"
+      labels:
+        date: "$.daily[*].date"
+        model_name: "$.daily[*].modelBreakdowns[*].modelName"
+      help: "Cost per model per day in USD"
+      
+    - name: claude_model_cache_creation_tokens
+      path: "$.daily[*].modelBreakdowns[*].cacheCreationTokens"
+      labels:
+        date: "$.daily[*].date"
+        model_name: "$.daily[*].modelBreakdowns[*].modelName"
+      help: "Cache creation tokens per model per day"
+      
+    - name: claude_model_cache_read_tokens
+      path: "$.daily[*].modelBreakdowns[*].cacheReadTokens"  
+      labels:
+        date: "$.daily[*].date"
+        model_name: "$.daily[*].modelBreakdowns[*].modelName"
+      help: "Cache read tokens per model per day"
